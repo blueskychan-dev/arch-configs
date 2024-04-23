@@ -1,0 +1,21 @@
+#!/bin/bash
+# 4005d --> 4005e
+
+echo "Enable msr kernel module"
+sudo modprobe msr
+echo "Disable BD PROCHOT (Method 1)"
+# sudo touch temp
+r=`sudo rdmsr 0x1FC`
+#echo $r > temp
+s='0x'$r'' 
+f=$(($s&0xFFFFE))
+sudo wrmsr 0x1FC "obase=16;$f"|bc
+echo "$r"" write to ""reg 0x1FC" 
+echo "BD PROCHOT off."
+echo "Disable BD PROCHOT (Method 2)"
+sudo wrmsr 0x1FC 2359388
+echo "Intel undervolt patch"
+sudo intel-undervolt apply
+sudo cpupower frequency-set -g performance
+echo "Done >3"
+
